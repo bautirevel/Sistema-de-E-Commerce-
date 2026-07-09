@@ -8,10 +8,9 @@ public class Conexion {
 
     public Connection conectar() {
         try {
-            // Se llama al driver de MySQL que pide la cátedra
             Class.forName("com.mysql.jdbc.Driver");
             
-            // Ruta a la base de datos (puerto 3306 es el default de MySQL)
+            //ruta a la bd
             con = DriverManager.getConnection("jdbc:mysql://localhost:3306/ecommerce", "root", "");
             System.out.println("Conexión exitosa a la base de datos.");
         } catch (Exception e) {
