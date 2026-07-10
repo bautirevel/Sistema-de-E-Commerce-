@@ -13,13 +13,13 @@ public class CategoriaDAOImpl implements CategoriaDAO {
             stmt.setString(1, "Nueva Categoria");
             stmt.setString(2, "ACTIVO");
             stmt.executeUpdate();
-            System.out.println("CategorÃƒÂ­a insertada correctamente en BD.");
+            System.out.println("CategorÃƒÆ’Ã‚Â­a insertada correctamente en BD.");
         } catch (SQLException e) {
             System.out.println("Error JDBC: " + e.getMessage());
         }
     }
-    @Override public void buscarPorId() { System.out.println("Buscando categorÃƒÂ­a en BD..."); }
-    @Override public void listarTodos() { System.out.println("Listando categorÃƒÂ­as desde BD..."); }
-    @Override public void actualizar() { System.out.println("CategorÃƒÂ­a actualizada en BD."); }
-    @Override public void eliminar() { System.out.println("CategorÃƒÂ­a eliminada de BD."); }
+    @Override public void buscarPorId() { System.out.println("Buscando categorÃƒÆ’Ã‚Â­a en BD..."); }
+    @Override public void listarTodos() { System.out.println("Listando categorÃƒÆ’Ã‚Â­as desde BD..."); }
+    @Override public void actualizar() { System.out.println("CategorÃƒÆ’Ã‚Â­a actualizada en BD."); }
+    @Override public void eliminar() { System.out.println("CategorÃƒÆ’Ã‚Â­a eliminada de BD."); }
 }
