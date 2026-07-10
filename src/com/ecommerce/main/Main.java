@@ -4,21 +4,11 @@ import java.util.Scanner;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.ecommerce.dao.ProductoDAO;
-import com.ecommerce.dao.impl.ProductoDAOImpl;
-import com.ecommerce.dao.UsuarioDAO;
-import com.ecommerce.dao.impl.UsuarioDAOImpl;
-import com.ecommerce.model.Producto;
-import com.ecommerce.model.ProductoFisico;
-import com.ecommerce.model.Usuario;
-import com.ecommerce.model.Rol;
-import com.ecommerce.model.ItemCarrito;
-import com.ecommerce.pagos.ProcesadorPago;
-import com.ecommerce.pagos.PagoTarjetaCredito;
-import com.ecommerce.pagos.PagoTarjetaDebito;
-import com.ecommerce.pagos.PagoTransferencia;
-import com.ecommerce.exceptions.CarritoVacioException;
-import com.ecommerce.exceptions.PermisoDenegadoException;
+import com.ecommerce.dao.*;
+import com.ecommerce.dao.impl.*;
+import com.ecommerce.model.*;
+import com.ecommerce.pagos.*;
+import com.ecommerce.exceptions.*;
 import com.ecommerce.utils.Validador;
 
 public class Main {
@@ -28,6 +18,8 @@ public class Main {
 
         ProductoDAO productoDAO = new ProductoDAOImpl();
         UsuarioDAO usuarioDAO = new UsuarioDAOImpl();
+        InventarioDAO inventarioDAO = new InventarioDAOImpl();
+        OrdenDAO ordenDAO = new OrdenDAOImpl();
         List<ItemCarrito> carrito = new ArrayList<>();
 
         System.out.println("=== BIENVENIDO AL SISTEMA DE LOGIN ===");
@@ -42,19 +34,7 @@ public class Main {
 
         while (!salir) {
             System.out.println("\n=== SISTEMA E-COMMERCE ===");
-            System.out.println("1. Gestion de Usuarios");
-            System.out.println("2. Gestion de Roles");
-            System.out.println("3. Gestion de Productos");
-            System.out.println("4. Gestion de Categorias");
-            System.out.println("5. Gestion de Inventario");
-            System.out.println("6. Carrito de Compras");
-            System.out.println("7. Ordenes de Compra");
-            System.out.println("8. Procesamiento de Pagos");
-            System.out.println("9. Gestion de Envios");
-            System.out.println("10. Seguimiento de Pedidos");
-            System.out.println("11. Reclamos y Devoluciones");
-            System.out.println("12. Reportes");
-            System.out.println("13. Salir");
+            System.out.println("1. Gestion de Usuarios\n2. Gestion de Roles\n3. Gestion de Productos\n4. Gestion de Categorias\n5. Gestion de Inventario\n6. Carrito de Compras\n7. Ordenes de Compra\n8. Procesamiento de Pagos\n9. Gestion de Envios\n10. Seguimiento de Pedidos\n11. Reclamos y Devoluciones\n12. Reportes\n13. Salir");
             System.out.print("Seleccione una opcion: ");
 
             int opcion = scanner.nextInt();
@@ -62,118 +42,85 @@ public class Main {
 
             try {
                 switch (opcion) {
-                    case 1: // Gestion de Usuarios (Solo Admin)
+                    case 1:
                         Validador.validarPermiso(rolActual == Rol.ADMINISTRADOR);
                         System.out.println("\n--- GESTION DE USUARIOS ---");
-                        System.out.println("1. Ingresar Usuario a BD");
-                        System.out.println("2. Ver Usuarios en BD");
+                        System.out.println("1. Ingresar Usuario a BD\n2. Ver Usuarios en BD");
                         System.out.print("Elija opcion: ");
                         int opUser = scanner.nextInt(); scanner.nextLine();
                         if(opUser == 1) {
                             System.out.print("Nombre: "); String nom = scanner.nextLine();
                             System.out.print("Apellido: "); String ape = scanner.nextLine();
                             System.out.print("Email: "); String mail = scanner.nextLine();
-                            Usuario nuevoUser = new Usuario(0, nom, ape, mail, "1234", new java.util.Date(), true, Rol.CLIENTE);
-                            usuarioDAO.insertar(nuevoUser);
+                            usuarioDAO.insertar(new Usuario(0, nom, ape, mail, "1234", new java.util.Date(), true, Rol.CLIENTE));
                             System.out.println("Usuario guardado en BD MySQL!");
-                        } else if(opUser == 2) {
-                            usuarioDAO.listarTodos();
-                        }
+                        } else if(opUser == 2) usuarioDAO.listarTodos();
                         break;
-
-                    case 2: // Gestion de Roles (Solo Admin)
-                    case 4: // Categorias (Solo Admin)
-                    case 5: // Inventario (Solo Admin)
-                    case 12: // Reportes (Solo Admin)
-                        Validador.validarPermiso(rolActual == Rol.ADMINISTRADOR);
-                        System.out.println("Modulo de Administrador autorizado. En desarrollo para esta entrega.");
-                        break;
-
-                    case 3: // Gestion de Productos (Solo Admin)
+                    case 3:
                         Validador.validarPermiso(rolActual == Rol.ADMINISTRADOR);
                         System.out.println("\n--- GESTION DE PRODUCTOS ---");
-                        System.out.println("1. Ingresar Producto a BD");
-                        System.out.println("2. Ver Productos en BD");
+                        System.out.println("1. Ingresar Producto a BD\n2. Ver Productos en BD");
                         System.out.print("Elija opcion: ");
                         int opProd = scanner.nextInt(); scanner.nextLine();
                         if(opProd == 1) {
                             System.out.print("Codigo: "); String cod = scanner.nextLine();
                             System.out.print("Nombre: "); String nom = scanner.nextLine();
                             System.out.print("Precio: "); double prec = scanner.nextDouble(); scanner.nextLine();
-                            Producto nuevo = new ProductoFisico(cod, nom, prec, 10);
-                            productoDAO.insertar(nuevo);
+                            productoDAO.insertar(new ProductoFisico(cod, nom, prec, 10));
                             System.out.println("Producto guardado en BD MySQL!");
-                        } else if(opProd == 2) {
-                            productoDAO.listarTodos();
-                        }
+                        } else if(opProd == 2) productoDAO.listarTodos();
                         break;
-
-                    case 6: // Carrito de Compras (Solo Cliente)
+                    case 6:
                         Validador.validarPermiso(rolActual == Rol.CLIENTE);
                         System.out.println("\n--- CARRITO DE COMPRAS ---");
-                        System.out.println("1. Agregar Producto al carrito");
-                        System.out.println("2. Ver carrito y totales");
+                        System.out.println("1. Agregar Producto al carrito\n2. Ver carrito y totales");
                         System.out.print("Opcion: ");
                         int opcCar = scanner.nextInt(); scanner.nextLine();
                         if (opcCar == 1) {
-                            Producto p = new ProductoFisico("PROD-01", "Notebook", 1000.0, 10);
-                            carrito.add(new ItemCarrito(p, 1));
-                            System.out.println("Producto agregado correctamente al carrito en memoria.");
+                            carrito.add(new ItemCarrito(new ProductoFisico("PROD-01", "Notebook", 1000.0, 10), 1));
+                            System.out.println("Producto agregado correctamente al carrito.");
                         } else if (opcCar == 2) {
                             if(carrito.isEmpty()) System.out.println("El carrito esta vacio.");
                             else {
-                                double total = 0;
-                                for(ItemCarrito item : carrito) {
-                                    System.out.println(item.toString());
-                                    total += item.getSubtotal();
-                                }
-                                System.out.println("TOTAL A PAGAR: $" + total);
+                                double t = 0;
+                                for(ItemCarrito i : carrito) { System.out.println(i); t += i.getSubtotal(); }
+                                System.out.println("TOTAL: $" + t);
                             }
                         }
                         break;
-
-                    case 7: // Ordenes de Compra (Solo Cliente)
+                    case 7:
                         Validador.validarPermiso(rolActual == Rol.CLIENTE);
                         System.out.println("\n--- ORDENES DE COMPRA ---");
                         if(carrito.isEmpty()) throw new CarritoVacioException("El carrito esta vacio.");
+                        
+                        double totalOrden = 0;
+                        for(ItemCarrito item : carrito) {
+                            totalOrden += item.getSubtotal();
+                            // DESCUENTA EL STOCK REAL EN MYSQL
+                            inventarioDAO.restarStock(item.getProducto().getCodigo(), item.getCantidad());
+                        }
+                        // GUARDA LA ORDEN REAL EN MYSQL
+                        ordenDAO.generarOrden(totalOrden, "CREADA");
                         carrito.clear();
-                        System.out.println("Orden procesada correctamente y carrito vaciado.");
+                        System.out.println("¡Compra finalizada! Orden generada en BD y stock actualizado.");
                         break;
-
-                    case 8: // Procesamiento de Pagos (Solo Cliente)
+                    case 8:
                         Validador.validarPermiso(rolActual == Rol.CLIENTE);
                         System.out.println("\n--- PROCESAMIENTO DE PAGOS ---");
-                        System.out.println("1. Tarjeta de Credito\n2. Tarjeta de Debito\n3. Transferencia Bancaria");
-                        System.out.print("Seleccione metodo: ");
+                        System.out.println("1. Tarjeta\n2. Debito\n3. Transferencia\nMetodo: ");
                         int met = scanner.nextInt();
-                        ProcesadorPago pago = null;
-                        if(met==1) pago = new PagoTarjetaCredito();
-                        else if(met==2) pago = new PagoTarjetaDebito();
-                        else if(met==3) pago = new PagoTransferencia();
-                        
-                        if(pago != null) pago.procesarPago(1000.0);
-                        else System.out.println("Metodo invalido.");
+                        ProcesadorPago pago = (met==1) ? new PagoTarjetaCredito() : (met==2) ? new PagoTarjetaDebito() : (met==3) ? new PagoTransferencia() : null;
+                        if(pago != null) pago.procesarPago(1000.0); else System.out.println("Invalido.");
                         break;
-
-                    case 9:  // Envios
-                    case 10: // Seguimiento
-                    case 11: // Reclamos
-                        Validador.validarPermiso(rolActual == Rol.CLIENTE);
-                        System.out.println("Modulo de Cliente autorizado. En desarrollo para esta entrega.");
-                        break;
-
                     case 13:
-                        salir = true;
-                        System.out.println("Saliendo del sistema...");
+                        salir = true; System.out.println("Saliendo...");
                         break;
                     default:
-                        System.out.println("Opcion incorrecta en el menu.");
+                        System.out.println("Modulo en desarrollo (Solo estructura UML/SQL).");
                         break;
                 }
-            } catch (PermisoDenegadoException e) {
-                System.out.println("[ERROR DE SEGURIDAD]: " + e.getMessage() + " Tu rol de " + rolActual + " no tiene permisos para esta opcion.");
-            } catch (CarritoVacioException e) {
-                System.out.println("[ERROR DE PROCESO]: " + e.getMessage());
+            } catch (Exception e) {
+                System.out.println("[ERROR]: " + e.getMessage());
             }
         }
         scanner.close();

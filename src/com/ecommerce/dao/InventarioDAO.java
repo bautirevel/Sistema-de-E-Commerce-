@@ -1,5 +1,4 @@
 package com.ecommerce.dao;
 public interface InventarioDAO {
-    void actualizarStock();
-    void consultarStock();
+    void restarStock(String codigoProducto, int cantidad);
 }
