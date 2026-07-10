@@ -1,4 +1,4 @@
-package com.ecommerce.dao;
+﻿package com.ecommerce.dao;
 
 import com.ecommerce.model.Usuario;
 import java.util.List;
@@ -9,4 +9,6 @@ public interface UsuarioDAO {
     List<Usuario> listarTodos();
     void actualizar(Usuario usuario);
     void eliminar(int id);
+    void activar(int id);
+    void desactivar(int id);
 }
