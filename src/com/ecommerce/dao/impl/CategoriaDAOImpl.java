@@ -1,4 +1,4 @@
-﻿package com.ecommerce.dao.impl;
+package com.ecommerce.dao.impl;
 import com.ecommerce.dao.CategoriaDAO;
 import java.sql.*;
 
@@ -13,13 +13,13 @@ public class CategoriaDAOImpl implements CategoriaDAO {
             stmt.setString(1, "Nueva Categoria");
             stmt.setString(2, "ACTIVO");
             stmt.executeUpdate();
-            System.out.println("Categoría insertada correctamente en BD.");
+            System.out.println("CategorÃƒÂ­a insertada correctamente en BD.");
         } catch (SQLException e) {
             System.out.println("Error JDBC: " + e.getMessage());
         }
     }
-    @Override public void buscarPorId() { System.out.println("Buscando categoría en BD..."); }
-    @Override public void listarTodos() { System.out.println("Listando categorías desde BD..."); }
-    @Override public void actualizar() { System.out.println("Categoría actualizada en BD."); }
-    @Override public void eliminar() { System.out.println("Categoría eliminada de BD."); }
+    @Override public void buscarPorId() { System.out.println("Buscando categorÃƒÂ­a en BD..."); }
+    @Override public void listarTodos() { System.out.println("Listando categorÃƒÂ­as desde BD..."); }
+    @Override public void actualizar() { System.out.println("CategorÃƒÂ­a actualizada en BD."); }
+    @Override public void eliminar() { System.out.println("CategorÃƒÂ­a eliminada de BD."); }
 }

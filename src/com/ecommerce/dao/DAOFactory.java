@@ -1,6 +1,8 @@
-﻿package com.ecommerce.dao;
+package com.ecommerce.dao;
+
 public abstract class DAOFactory {
     public abstract UsuarioDAO crearUsuarioDAO();
+    public abstract ProductoDAO crearProductoDAO();
     public abstract CategoriaDAO crearCategoriaDAO();
     public abstract InventarioDAO crearInventarioDAO();
     public abstract OrdenDAO crearOrdenDAO();

@@ -1,4 +1,4 @@
-﻿package com.ecommerce.pagos;
+package com.ecommerce.pagos;
 
 public class PagoBilleteraVirtual implements ProcesadorPago {
     @Override

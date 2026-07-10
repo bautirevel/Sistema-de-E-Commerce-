@@ -7,10 +7,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UsuarioDAOImpl implements UsuarioDAO {
-    //conexión a la bd
+    //conexiÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n a la bd
     private Conexion conexion;
 
-    //constructor que da inicio a la conexión
+    //constructor que da inicio a la conexiÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n
     public UsuarioDAOImpl() {
         this.conexion = new Conexion();
     }
@@ -36,4 +36,7 @@ public class UsuarioDAOImpl implements UsuarioDAO {
     @Override
     public void eliminar(int id) {
     }
+
+    @Override public void activar(int id) {}
+    @Override public void desactivar(int id) {}
 }

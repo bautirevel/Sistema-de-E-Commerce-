@@ -5,7 +5,7 @@ import com.ecommerce.exceptions.*;
 
 public class Validador {
     public static void validarCadena(String valor, String campo) throws DatosInvalidosException {
-        if (valor == null || valor.trim().isEmpty()) throw new DatosInvalidosException("El campo " + campo + " no puede estar vacío.");
+        if (valor == null || valor.trim().isEmpty()) throw new DatosInvalidosException("El campo " + campo + " no puede estar vacÃƒÆ’Ã‚Â­o.");
     }
 
     public static void validarPrecio(double precio) throws DatosInvalidosException {
@@ -17,7 +17,7 @@ public class Validador {
     }
 
     public static void validarProductoDuplicado(String codigo, ProductoDAO dao) throws ProductoDuplicadoException {
-        if (dao.buscarPorCodigo(codigo) != null) throw new ProductoDuplicadoException("El código " + codigo + " ya existe.");
+        if (dao.buscarPorCodigo(codigo) != null) throw new ProductoDuplicadoException("El cÃƒÆ’Ã‚Â³digo " + codigo + " ya existe.");
     }
 
     public static void validarStockDisponible(int solicitado, int disponible) throws StockInsuficienteException {

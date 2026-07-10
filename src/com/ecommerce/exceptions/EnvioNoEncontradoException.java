@@ -1,4 +1,4 @@
-﻿package com.ecommerce.exceptions;
+package com.ecommerce.exceptions;
 
 public class EnvioNoEncontradoException extends Exception {
     public EnvioNoEncontradoException(String message) {

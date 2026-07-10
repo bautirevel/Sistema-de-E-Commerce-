@@ -1,4 +1,4 @@
-﻿package com.ecommerce.dao;
+package com.ecommerce.dao;
 public interface CategoriaDAO {
     void insertar();
     void buscarPorId();

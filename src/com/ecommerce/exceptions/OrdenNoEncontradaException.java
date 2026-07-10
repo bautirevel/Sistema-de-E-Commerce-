@@ -1,4 +1,4 @@
-﻿package com.ecommerce.exceptions;
+package com.ecommerce.exceptions;
 
 public class OrdenNoEncontradaException extends Exception {
     public OrdenNoEncontradaException(String message) {

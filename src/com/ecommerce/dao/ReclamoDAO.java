@@ -1,4 +1,4 @@
-﻿package com.ecommerce.dao;
+package com.ecommerce.dao;
 public interface ReclamoDAO {
     void abrirReclamo();
     void buscarReclamo();

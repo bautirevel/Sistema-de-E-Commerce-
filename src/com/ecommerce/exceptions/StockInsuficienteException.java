@@ -1,7 +1,4 @@
-﻿package com.ecommerce.exceptions;
-
+package com.ecommerce.exceptions;
 public class StockInsuficienteException extends Exception {
-    public StockInsuficienteException(String message) {
-        super(message);
-    }
+    public StockInsuficienteException(String mensaje) { super(mensaje); }
 }

@@ -1,4 +1,4 @@
-﻿package com.ecommerce.model;
+package com.ecommerce.model;
 
 public class ItemCarrito {
     private Producto producto;

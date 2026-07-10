@@ -1,7 +1,4 @@
-﻿package com.ecommerce.exceptions;
-
+package com.ecommerce.exceptions;
 public class PermisoDenegadoException extends Exception {
-    public PermisoDenegadoException(String message) {
-        super(message);
-    }
+    public PermisoDenegadoException(String mensaje) { super(mensaje); }
 }

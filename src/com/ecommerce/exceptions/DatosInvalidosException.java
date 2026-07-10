@@ -1,4 +1,4 @@
-﻿package com.ecommerce.exceptions;
+package com.ecommerce.exceptions;
 
 public class DatosInvalidosException extends Exception {
     public DatosInvalidosException(String message) {

@@ -1,4 +1,4 @@
-﻿package com.ecommerce.interfaces;
+package com.ecommerce.interfaces;
 
 public interface Calculable {
     double calcularPrecioFinal();
