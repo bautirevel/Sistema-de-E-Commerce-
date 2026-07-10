@@ -1,10 +1,14 @@
 package com.ecommerce.main;
-import java.util.Scanner;
 import com.ecommerce.dao.ProductoDAO;
 import com.ecommerce.dao.impl.ProductoDAOImpl;
+import com.ecommerce.exceptions.DatosInvalidosException;
+import com.ecommerce.exceptions.ProductoDuplicadoException;
+import com.ecommerce.model.EstadoProducto;
 import com.ecommerce.model.Producto;
 import com.ecommerce.model.ProductoFisico;
-import com.ecommerce.model.EstadoProducto;
+import com.ecommerce.utils.Validador;
+
+import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
@@ -23,32 +27,33 @@ public class Main {
             scanner.nextLine();
 
             if (opcion == 1) {
-                System.out.print("Ingrese el codigo (ej. PF-01): ");
-                String codigo = scanner.nextLine();
-                System.out.print("Ingrese el nombre: ");
-                String nombre = scanner.nextLine();
-                System.out.print("Ingrese el precio base: ");
-                double precio = scanner.nextDouble();
-                scanner.nextLine();
+            try {
+            System.out.print("Ingrese el codigo: ");
+            String codigo = scanner.nextLine();
+            Validador.validarCadena(codigo, "Codigo");
+            Validador.validarProductoDuplicado(codigo, productoDAO);
 
-                // Instanciamos TU clase hija (ProductoFisico) y usamos tu enum EstadoProducto
-                Producto nuevoProducto = new ProductoFisico(
-                    codigo, 
-                    nombre, 
-                    "Sin descripcion", 
-                    precio, 
-                    "General", 
-                    10,                     // stock
-                    1.5,                    // peso
-                    EstadoProducto.ACTIVO,  // estado
-                    500.0                   // costo de envio
-                );
-                
-                System.out.println("Procesando tu objeto...");
-                productoDAO.insertar(nuevoProducto);
-                System.out.println("¡Exito!");
+            System.out.print("Ingrese el nombre: ");
+            String nombre = scanner.nextLine();
+            Validador.validarCadena(nombre, "Nombre");
 
-            } else if (opcion == 2) {
+            System.out.print("Ingrese el precio: ");
+            double precio = scanner.nextDouble();
+            Validador.validarPrecio(precio);
+
+            System.out.print("Ingrese el stock: ");
+            int stock = scanner.nextInt();
+            Validador.validarStock(stock);
+            scanner.nextLine();
+
+            Producto nuevoProducto = new ProductoFisico(codigo, nombre, "Sin desc", precio, "General", stock, 1.5, EstadoProducto.ACTIVO, 500.0);
+            productoDAO.insertar(nuevoProducto);
+            System.out.println("¡Exito!");
+
+    } catch (DatosInvalidosException | ProductoDuplicadoException e) {
+        System.out.println("Error: " + e.getMessage());
+    }
+} else if (opcion == 2) {
                 productoDAO.listarTodos();
             } else if (opcion == 3) {
                 salir = true;
