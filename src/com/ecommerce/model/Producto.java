@@ -1,4 +1,4 @@
-﻿package com.ecommerce.model;
+package com.ecommerce.model;
 
 public abstract class Producto {
     protected String codigoUnico;

@@ -1,20 +1,19 @@
-﻿package com.ecommerce.utils;
-
+package com.ecommerce.utils;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.SQLException;
 
 public class Conexion {
+    private static final String URL = "jdbc:mysql://localhost:3306/ecommerce";
+    private static final String USER = "root";
+    private static final String PASS = "";
     private Connection con;
 
     public Connection conectar() {
         try {
-            Class.forName("com.mysql.jdbc.Driver");
-            
-            //ruta a la bd
-            con = DriverManager.getConnection("jdbc:mysql://localhost:3306/ecommerce", "root", "");
-            System.out.println("Conexión exitosa a la base de datos.");
-        } catch (Exception e) {
-            System.out.println("Error al conectarse a la base de datos: " + e.getMessage());
+            con = DriverManager.getConnection(URL, USER, PASS);
+        } catch (SQLException e) {
+            System.out.println("Error de conexion: " + e.getMessage());
         }
         return con;
     }
@@ -23,10 +22,9 @@ public class Conexion {
         try {
             if (con != null && !con.isClosed()) {
                 con.close();
-                System.out.println("Conexión cerrada.");
             }
-        } catch (Exception e) {
-            System.out.println("Error al cerrar la conexión.");
+        } catch (SQLException e) {
+            System.out.println("Error al desconectar: " + e.getMessage());
         }
     }
 }
