@@ -7,6 +7,8 @@ import com.ecommerce.model.*;
 import com.ecommerce.utils.Validador;
 import com.ecommerce.pagos.*;
 import com.ecommerce.reportes.GeneradorReportes;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class Main {
@@ -14,10 +16,12 @@ public class Main {
         Scanner scanner = new Scanner(System.in);
         boolean salir = false;
 
-        // Requisito Obligatorio: Uso de Abstract Factory para la persistencia
+        // Abstract Factory y DAOs
         DAOFactory factory = new SqliteDAOFactory();
-        // Usamos una implementacion directa temporalmente solo para salvar la prueba de Theo
-        ProductoDAO productoDAO = new ProductoDAOImpl(); 
+        OrdenDAO ordenDAO = factory.crearOrdenDAO();
+
+        // Requisito Obligatorio: Colecciones genéricas para el Carrito
+        List<ItemCarrito> carrito = new ArrayList<>();
 
         while (!salir) {
             System.out.println("\n=== SISTEMA E-COMMERCE ===");
@@ -41,14 +45,11 @@ public class Main {
 
             switch (opcion) {
                 case 3:
-                    // Logica de validaciones que armó Theo
                     try {
                         System.out.print("Ingrese el precio: ");
                         double precio = scanner.nextDouble();
-                        // Validador.validarPrecio(precio); // Descomentar cuando Validador este listo
                         System.out.print("Ingrese el stock: ");
                         int stock = scanner.nextInt();
-                        // Validador.validarStock(stock); // Descomentar cuando Validador este listo
                         scanner.nextLine();
                         System.out.println("¡Validaciones de producto exitosas!");
                     } catch (Exception e) {
@@ -56,14 +57,55 @@ public class Main {
                     }
                     break;
 
+                case 6:
+                    System.out.println("\n--- Carrito de Compras ---");
+                    System.out.println("1. Agregar un Producto al carrito");
+                    System.out.println("2. Visualizar carrito y totales");
+                    System.out.print("Elija una opcion: ");
+                    int opcCarrito = scanner.nextInt();
+                    if (opcCarrito == 1) {
+                        // Simulamos agregar un producto fisico para probar la coleccion
+                        Producto p = new ProductoFisico("PROD-01", "Notebook", 1000.0, 10);
+                        carrito.add(new ItemCarrito(p, 1));
+                        System.out.println("¡Producto agregado correctamente al ArrayList!");
+                    } else if (opcCarrito == 2) {
+                        if(carrito.isEmpty()) {
+                            System.out.println("El carrito está vacío.");
+                        } else {
+                            double total = 0;
+                            for(ItemCarrito item : carrito) {
+                                System.out.println(item.toString());
+                                total += item.getSubtotal();
+                            }
+                            System.out.println("TOTAL A PAGAR: $" + total);
+                        }
+                    }
+                    break;
+
+                case 7:
+                    System.out.println("\n--- Generar Orden de Compra ---");
+                    try {
+                        if(carrito.isEmpty()) {
+                            // Requisito Obligatorio: Excepcion si compran con carrito vacio
+                            throw new CarritoVacioException("No se puede generar la orden. ¡El carrito está vacío!");
+                        }
+                        System.out.println("Iniciando transacción...");
+                        // Llamamos al DAO que ahora tiene JDBC para guardar en la BD real
+                        ordenDAO.generarOrden(); 
+                        
+                        // Si todo sale bien, vaciamos el carrito
+                        carrito.clear(); 
+                        System.out.println("¡La orden se guardó en SQLite y el carrito se ha vaciado!");
+                    } catch (CarritoVacioException e) {
+                        System.out.println("Excepción capturada: " + e.getMessage());
+                    }
+                    break;
+
                 case 8:
-                    // Requisito Obligatorio: Patrón Strategy
                     System.out.println("\n--- Procesamiento de Pagos ---");
                     System.out.println("1. Tarjeta de Crédito");
                     System.out.println("2. Tarjeta de Débito");
                     System.out.println("3. Transferencia Bancaria");
-                    System.out.println("4. Billetera Virtual");
-                    System.out.println("5. Pago Contra Entrega");
                     System.out.print("Seleccione el método de pago: ");
                     int metodo = scanner.nextInt();
                     System.out.print("Ingrese el monto a cobrar: ");
@@ -74,16 +116,12 @@ public class Main {
                         case 1: pago = new PagoTarjetaCredito(); break;
                         case 2: pago = new PagoTarjetaDebito(); break;
                         case 3: pago = new PagoTransferencia(); break;
-                        case 4: pago = new PagoBilleteraVirtual(); break;
-                        case 5: pago = new PagoContraEntrega(); break;
                         default: System.out.println("Método inválido."); continue;
                     }
-                    // Implementacion polimorfica
                     pago.procesarPago(monto);
                     break;
 
                 case 12:
-                    // Requisito Obligatorio: 15 Reportes
                     new GeneradorReportes().imprimirReportes();
                     break;
 
