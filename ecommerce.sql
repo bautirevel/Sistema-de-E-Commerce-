@@ -1,0 +1,50 @@
+-- CREACIÓN DE LA BASE DE DATOS Y TABLAS PARA EL SISTEMA E-COMMERCE
+CREATE DATABASE IF NOT EXISTS ecommerce;
+USE ecommerce;
+
+CREATE TABLE IF NOT EXISTS usuarios (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(50) NOT NULL,
+    apellido VARCHAR(50) NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    fecha_alta DATETIME DEFAULT CURRENT_TIMESTAMP,
+    estado BOOLEAN DEFAULT TRUE,
+    rol VARCHAR(20) DEFAULT 'CLIENTE'
+);
+
+CREATE TABLE IF NOT EXISTS productos (
+    codigo VARCHAR(20) PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    descripcion TEXT,
+    precio DECIMAL(10,2) NOT NULL,
+    categoria VARCHAR(50),
+    stock INT NOT NULL DEFAULT 0,
+    peso DECIMAL(5,2),
+    estado VARCHAR(20) DEFAULT 'ACTIVO'
+);
+
+CREATE TABLE IF NOT EXISTS ordenes (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    total DECIMAL(10,2) NOT NULL,
+    estado VARCHAR(20) NOT NULL DEFAULT 'CREADA',
+    fecha DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS categorias (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(50) NOT NULL,
+    descripcion TEXT,
+    estado VARCHAR(20) DEFAULT 'ACTIVO'
+);
+
+CREATE TABLE IF NOT EXISTS reclamos (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    motivo TEXT NOT NULL,
+    estado VARCHAR(20) DEFAULT 'ABIERTO',
+    fecha DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+-- DATOS DE PRUEBA INICIALES
+INSERT IGNORE INTO productos (codigo, nombre, descripcion, precio, categoria, stock, peso, estado) VALUES 
+('PROD-01', 'Notebook Gamer', 'Notebook alta gama', 1500000.00, 'Tecnologia', 10, 2.5, 'ACTIVO');
