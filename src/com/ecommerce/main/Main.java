@@ -22,6 +22,8 @@ public class Main {
         InventarioDAO inventarioDAO = new InventarioDAOImpl();
         CategoriaDAO categoriaDAO = new CategoriaDAOImpl();
         OrdenDAO ordenDAO = new OrdenDAOImpl();
+        EnvioDAO envioDAO = new EnvioDAOImpl();
+        ReclamoDAO reclamoDAO = new ReclamoDAOImpl();
         GeneradorReportes reportes = new GeneradorReportes();
         List<ItemCarrito> carrito = new ArrayList<>();
 
@@ -78,7 +80,7 @@ public class Main {
                         Validador.validarPermiso(rolActual == Rol.ADMINISTRADOR);
                         System.out.print("Ingrese Codigo de Producto a modificar: "); String codInv = scanner.nextLine();
                         System.out.print("Cantidad a ingresar (Stock): "); int cant = scanner.nextInt(); scanner.nextLine();
-                        inventarioDAO.restarStock(codInv, -cant); // Restar negativo suma stock
+                        inventarioDAO.restarStock(codInv, -cant);
                         System.out.println("¡Stock actualizado en BD!");
                         break;
                     case 6:
@@ -101,6 +103,23 @@ public class Main {
                         ProcesadorPago p = (met==1) ? new PagoTarjetaCredito() : (met==2) ? new PagoTarjetaDebito() : (met==3) ? new PagoTransferencia() : null;
                         if(p!=null) p.procesarPago(1000.0);
                         break;
+                    case 9:
+                        Validador.validarPermiso(rolActual == Rol.CLIENTE);
+                        System.out.print("Ingrese ID de Orden a enviar: "); int idOrd = scanner.nextInt(); scanner.nextLine();
+                        System.out.print("Direccion de entrega: "); String dir = scanner.nextLine();
+                        envioDAO.registrarEnvio(idOrd, dir);
+                        System.out.println("¡Envio programado en BD!");
+                        break;
+                    case 10:
+                        Validador.validarPermiso(rolActual == Rol.CLIENTE);
+                        System.out.print("Ingrese ID de Envio para rastrear: "); int idEnv = scanner.nextInt(); scanner.nextLine();
+                        envioDAO.rastrearEnvio(idEnv);
+                        break;
+                    case 11:
+                        Validador.validarPermiso(rolActual == Rol.CLIENTE);
+                        System.out.print("Escriba el motivo de su reclamo/devolucion: "); String motivo = scanner.nextLine();
+                        reclamoDAO.abrirReclamo(motivo);
+                        break;
                     case 12:
                         Validador.validarPermiso(rolActual == Rol.ADMINISTRADOR);
                         reportes.mostrarEstadisticas();
@@ -108,7 +127,7 @@ public class Main {
                     case 13:
                         salir = true; break;
                     default:
-                        System.out.println("Opcion reservada para Cliente (Envios, Seguimiento, Reclamos).");
+                        System.out.println("Opcion incorrecta.");
                         break;
                 }
             } catch (Exception e) { System.out.println("[ERROR]: " + e.getMessage()); }
