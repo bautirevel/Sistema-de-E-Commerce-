@@ -1,8 +1,5 @@
 package com.ecommerce.dao;
 public interface CategoriaDAO {
-    void insertar();
-    void buscarPorId();
+    void insertar(String nombre, String descripcion);
     void listarTodos();
-    void actualizar();
-    void eliminar();
 }
