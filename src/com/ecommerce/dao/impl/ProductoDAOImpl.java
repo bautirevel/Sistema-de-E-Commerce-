@@ -2,61 +2,34 @@ package com.ecommerce.dao.impl;
 import com.ecommerce.dao.ProductoDAO;
 import com.ecommerce.model.Producto;
 import com.ecommerce.utils.Conexion;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.util.ArrayList;
-import java.util.List;
+import java.sql.*;
 
 public class ProductoDAOImpl implements ProductoDAO {
     private Conexion conexion = new Conexion();
-
+    public ProductoDAOImpl() {
+        try (Connection con = conexion.conectar(); Statement st = con.createStatement()) {
+            st.execute("CREATE TABLE IF NOT EXISTS productos (codigo VARCHAR(20) PRIMARY KEY, nombre VARCHAR(50), precio DOUBLE, stock INT, categoria VARCHAR(30))");
+        } catch (SQLException e) {}
+    }
     @Override
     public void insertar(Producto producto) {
-        Connection con = conexion.conectar();
-        if (con == null) return;
-        try {
-            String sql = "INSERT INTO productos (codigo, nombre, precio) VALUES (?, ?, ?)";
-            PreparedStatement ps = con.prepareStatement(sql);
-            
-            ps.setString(1, producto.getCodigoUnico());
-            ps.setString(2, producto.getNombre());
-            ps.setDouble(3, producto.getPrecioBase());
-            
-            ps.executeUpdate();
-            ps.close();
-        } catch (Exception e) {
-            System.out.println("Error en BD: " + e.getMessage());
-        } finally {
-            conexion.desconectar();
-        }
+        try (Connection con = conexion.conectar(); PreparedStatement ps = con.prepareStatement("INSERT INTO productos VALUES (?, ?, ?, ?, ?)")) {
+            ps.setString(1, producto.getCodigo()); ps.setString(2, producto.getNombre());
+            ps.setDouble(3, producto.getPrecio()); ps.setInt(4, producto.getStock()); ps.setString(5, producto.getCategoria());
+            ps.executeUpdate(); System.out.println("Producto guardado en BD.");
+        } catch (SQLException e) { System.out.println("Error: " + e.getMessage()); }
     }
-
-    @Override public Producto buscarPorCodigo(String codigo) { return null; }
-
     @Override
-    public List<Producto> listarTodos() {
-        Connection con = conexion.conectar();
-        if (con == null) return new ArrayList<>();
-        try {
-            String sql = "SELECT * FROM productos";
-            PreparedStatement ps = con.prepareStatement(sql);
-            ResultSet rs = ps.executeQuery();
-            System.out.println("\n--- TU BASE DE DATOS REAL ---");
-            while (rs.next()) {
-                System.out.println("Cod: " + rs.getString("codigo") + " | " + rs.getString("nombre") + " | $" + rs.getDouble("precio"));
-            }
-            System.out.println("-----------------------------\n");
-            rs.close();
-            ps.close();
-        } catch (Exception e) {
-            System.out.println("Error en BD: " + e.getMessage());
-        } finally {
-            conexion.desconectar();
-        }
-        return new ArrayList<>();
+    public void listarTodos() {
+        try (Connection con = conexion.conectar(); Statement st = con.createStatement(); ResultSet rs = st.executeQuery("SELECT * FROM productos")) {
+            System.out.println("--- CATALOGO DE PRODUCTOS ---");
+            while(rs.next()) System.out.println("[" + rs.getString("codigo") + "] " + rs.getString("nombre") + " - $" + rs.getDouble("precio") + " (Stock: " + rs.getInt("stock") + ")");
+        } catch (SQLException e) {}
     }
-
-    @Override public void actualizar(Producto producto) {}
-    @Override public void eliminar(String codigo) {}
+    @Override
+    public void eliminar(String codigo) {
+        try (Connection con = conexion.conectar(); PreparedStatement ps = con.prepareStatement("DELETE FROM productos WHERE codigo=?")) {
+            ps.setString(1, codigo); ps.executeUpdate(); System.out.println("Producto eliminado.");
+        } catch (SQLException e) {}
+    }
 }
