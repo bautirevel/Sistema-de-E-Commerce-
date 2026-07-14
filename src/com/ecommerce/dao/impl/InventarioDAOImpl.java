@@ -21,6 +21,18 @@ public class InventarioDAOImpl implements InventarioDAO {
         try { alterarStock(codigo, cantidad, "INGRESO"); } catch(Exception e) {}
     }
 
+    public int consultarStock(String codigo) {
+        try (Connection con = Conexion.getInstancia().conectar();
+             PreparedStatement ps = con.prepareStatement("SELECT stock FROM productos WHERE codigo = ?")) {
+            ps.setString(1, codigo);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) return rs.getInt("stock");
+        } catch (SQLException e) {
+            System.out.println("Error consultando stock: " + e.getMessage());
+        }
+        return -1; // -1 indica que el producto no existe
+    }
+
     public void ajustarStock(String codigo, int nuevaCantidad) {
         try (Connection con = Conexion.getInstancia().conectar();
              PreparedStatement ps = con.prepareStatement("UPDATE productos SET stock = ? WHERE codigo = ?")) {
