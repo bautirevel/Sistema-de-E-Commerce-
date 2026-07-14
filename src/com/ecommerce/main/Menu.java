@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Date;
 
-import com.ecommerce.dao.*;
 import com.ecommerce.dao.impl.*;
 import com.ecommerce.model.*;
 import com.ecommerce.pagos.*;
@@ -74,7 +73,7 @@ public class Menu {
                                 System.out.print("Codigo: "); String c = scanner.nextLine();
                                 System.out.print("Nombre: "); String n = scanner.nextLine();
                                 System.out.print("Precio: "); double p = Double.parseDouble(scanner.nextLine());
-                                productoDAO.insertar(new ProductoFisico(c, n, p, 10));
+                                productoDAO.insertar(new ProductoFisico(c, n, p, 10)); // Por defecto crea Fisico con 10 de stock
                             } else if (opP==2) productoDAO.listarTodos();
                             else if (opP==3) { System.out.print("Codigo a eliminar: "); productoDAO.eliminar(scanner.nextLine()); }
                             break;
@@ -99,15 +98,38 @@ public class Menu {
                     switch (opcion) {
                         case 1: productoDAO.listarTodos(); break;
                         case 2:
-                            System.out.println("1. Agregar Dummy Prod | 2. Ver | 3. Vaciar"); int opCar = Integer.parseInt(scanner.nextLine());
-                            if(opCar==1) { carrito.add(new ItemCarrito(new ProductoFisico("TEST-01", "Articulo Prueba", 1000.0, 5), 1)); System.out.println("Agregado."); }
-                            else if(opCar==2) { double t=0; for(ItemCarrito i:carrito){ System.out.println(i); t+=i.getSubtotal();} System.out.println("TOTAL: $"+t); }
-                            else if(opCar==3) { carrito.clear(); System.out.println("Vaciado."); }
+                            System.out.println("1. Agregar Producto al Carrito | 2. Ver Carrito | 3. Vaciar"); 
+                            int opCar = Integer.parseInt(scanner.nextLine());
+                            if(opCar==1) { 
+                                System.out.print("Ingrese el Codigo del Producto: ");
+                                String cod = scanner.nextLine();
+                                Producto prodElegido = productoDAO.buscarPorCodigo(cod);
+                                if (prodElegido != null) {
+                                    System.out.print("Cantidad a llevar: ");
+                                    int cantidad = Integer.parseInt(scanner.nextLine());
+                                    carrito.add(new ItemCarrito(prodElegido, cantidad));
+                                    System.out.println("[EXITO]: Producto agregado al carrito.");
+                                } else {
+                                    System.out.println("[ERROR]: El producto con codigo '" + cod + "' no existe.");
+                                }
+                            }
+                            else if(opCar==2) { 
+                                if(carrito.isEmpty()) { System.out.println("El carrito esta vacio."); }
+                                else {
+                                    double t=0; 
+                                    System.out.println("--- TU CARRITO ---");
+                                    for(ItemCarrito i:carrito){ System.out.println(i); t+=i.getSubtotal();} 
+                                    System.out.println("TOTAL A PAGAR: $"+t); 
+                                }
+                            }
+                            else if(opCar==3) { carrito.clear(); System.out.println("Carrito vaciado."); }
                             break;
                         case 3:
-                            if(carrito.isEmpty()) throw new CarritoVacioException("El carrito esta vacio.");
-                            ordenDAO.generarOrden(1500.0, "PENDIENTE PAGO");
-                            carrito.clear(); System.out.println("Orden generada.");
+                            if(carrito.isEmpty()) throw new CarritoVacioException("El carrito esta vacio, no se puede generar orden.");
+                            double totalOrden = 0;
+                            for(ItemCarrito i:carrito) totalOrden += i.getSubtotal();
+                            ordenDAO.generarOrden(totalOrden, "PENDIENTE PAGO");
+                            carrito.clear(); 
                             break;
                         case 4: new PagoTarjetaCredito().procesarPago(1500.0); break;
                         case 5: System.out.print("ID de Envio: "); envioDAO.rastrearEnvio(Integer.parseInt(scanner.nextLine())); break;

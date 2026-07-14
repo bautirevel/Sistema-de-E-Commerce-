@@ -4,4 +4,5 @@ public interface ProductoDAO {
     void insertar(Producto producto);
     void listarTodos();
     void eliminar(String codigo);
+    Producto buscarPorCodigo(String codigo);
 }

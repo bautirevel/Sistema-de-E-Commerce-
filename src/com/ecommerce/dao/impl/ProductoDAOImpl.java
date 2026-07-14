@@ -1,6 +1,6 @@
 package com.ecommerce.dao.impl;
 import com.ecommerce.dao.ProductoDAO;
-import com.ecommerce.model.Producto;
+import com.ecommerce.model.*;
 import com.ecommerce.utils.Conexion;
 import java.sql.*;
 
@@ -31,5 +31,16 @@ public class ProductoDAOImpl implements ProductoDAO {
         try (Connection con = conexion.conectar(); PreparedStatement ps = con.prepareStatement("DELETE FROM productos WHERE codigo=?")) {
             ps.setString(1, codigo); ps.executeUpdate(); System.out.println("Producto eliminado.");
         } catch (SQLException e) {}
+    }
+    @Override
+    public Producto buscarPorCodigo(String codigo) {
+        try (Connection con = conexion.conectar(); PreparedStatement ps = con.prepareStatement("SELECT * FROM productos WHERE codigo=?")) {
+            ps.setString(1, codigo); ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                // Instanciamos como ProductoFisico por defecto para el carrito
+                return new ProductoFisico(rs.getString("codigo"), rs.getString("nombre"), rs.getDouble("precio"), rs.getInt("stock"));
+            }
+        } catch (SQLException e) {}
+        return null;
     }
 }
