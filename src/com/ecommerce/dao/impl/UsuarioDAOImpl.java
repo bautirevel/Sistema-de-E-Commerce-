@@ -66,4 +66,78 @@ public class UsuarioDAOImpl implements UsuarioDAO {
             ps.executeUpdate();
         } catch (SQLException e) {}
     }
+
+    @Override
+    public void actualizar(Usuario usuario) {
+        try (Connection con = conexion.conectar();
+             PreparedStatement ps = con.prepareStatement("UPDATE usuarios SET nombre=?, apellido=?, email=?, rol=? WHERE id=?")) {
+            ps.setString(1, usuario.getNombre());
+            ps.setString(2, usuario.getApellido());
+            ps.setString(3, usuario.getEmail());
+            ps.setString(4, usuario.getRol().name());
+            ps.setInt(5, usuario.getId());
+            int filas = ps.executeUpdate();
+            if (filas > 0) System.out.println("Usuario actualizado correctamente.");
+            else System.out.println("[ERROR]: No se encontro el usuario a modificar.");
+        } catch (SQLIntegrityConstraintViolationException e) {
+            System.out.println("[ERROR]: El email ya se encuentra registrado por otro usuario.");
+        } catch (SQLException e) {
+            System.out.println("Error al actualizar usuario: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public Usuario buscarPorId(int id) {
+        try (Connection con = conexion.conectar();
+             PreparedStatement ps = con.prepareStatement("SELECT * FROM usuarios WHERE id = ?")) {
+            ps.setInt(1, id);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) return mapearUsuario(rs);
+        } catch (SQLException e) {
+            System.out.println("Error buscando usuario: " + e.getMessage());
+        }
+        return null;
+    }
+
+    @Override
+    public Usuario buscarPorEmail(String email) {
+        try (Connection con = conexion.conectar();
+             PreparedStatement ps = con.prepareStatement("SELECT * FROM usuarios WHERE email = ?")) {
+            ps.setString(1, email);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) return mapearUsuario(rs);
+        } catch (SQLException e) {
+            System.out.println("Error buscando usuario: " + e.getMessage());
+        }
+        return null;
+    }
+
+    @Override
+    public void activar(int id) {
+        cambiarEstado(id, true);
+    }
+
+    @Override
+    public void desactivar(int id) {
+        cambiarEstado(id, false);
+    }
+
+    private void cambiarEstado(int id, boolean estado) {
+        try (Connection con = conexion.conectar();
+             PreparedStatement ps = con.prepareStatement("UPDATE usuarios SET estado=? WHERE id=?")) {
+            ps.setBoolean(1, estado);
+            ps.setInt(2, id);
+            int filas = ps.executeUpdate();
+            if (filas > 0) System.out.println("Usuario " + (estado ? "activado." : "desactivado."));
+            else System.out.println("[ERROR]: No se encontro el usuario indicado.");
+        } catch (SQLException e) {
+            System.out.println("Error al cambiar estado del usuario: " + e.getMessage());
+        }
+    }
+
+    private Usuario mapearUsuario(ResultSet rs) throws SQLException {
+        return new Usuario(rs.getInt("id"), rs.getString("nombre"), rs.getString("apellido"),
+                rs.getString("email"), rs.getString("contrasena"), new Date(),
+                rs.getBoolean("estado"), Rol.valueOf(rs.getString("rol")));
+    }
 }
