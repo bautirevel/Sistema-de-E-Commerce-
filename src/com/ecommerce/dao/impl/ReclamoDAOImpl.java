@@ -4,7 +4,7 @@ import com.ecommerce.utils.Conexion;
 import java.sql.*;
 
 public class ReclamoDAOImpl implements ReclamoDAO {
-    private Conexion conexion = new Conexion();
+    private Conexion conexion = Conexion.getInstancia();
     public ReclamoDAOImpl() {
         try (Connection con = conexion.conectar(); Statement st = con.createStatement()) {
             st.execute("CREATE TABLE IF NOT EXISTS reclamos (id INT AUTO_INCREMENT PRIMARY KEY, motivo VARCHAR(200), estado VARCHAR(30) DEFAULT 'ABIERTO')");

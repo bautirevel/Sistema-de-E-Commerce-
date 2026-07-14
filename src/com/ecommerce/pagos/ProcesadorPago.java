@@ -1,2 +1,4 @@
 package com.ecommerce.pagos;
-public interface ProcesadorPago { void procesarPago(double monto); }
+public interface ProcesadorPago {
+    boolean procesarPago(double monto);
+}

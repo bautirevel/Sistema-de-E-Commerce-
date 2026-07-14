@@ -5,7 +5,7 @@ import com.ecommerce.utils.Conexion;
 import java.sql.*;
 
 public class ProductoDAOImpl implements ProductoDAO {
-    private Conexion conexion = new Conexion();
+    private Conexion conexion = Conexion.getInstancia();
     public ProductoDAOImpl() {
         try (Connection con = conexion.conectar(); Statement st = con.createStatement()) {
             st.execute("CREATE TABLE IF NOT EXISTS productos (codigo VARCHAR(20) PRIMARY KEY, nombre VARCHAR(50), precio DOUBLE, stock INT, categoria VARCHAR(30))");

@@ -4,7 +4,7 @@ import com.ecommerce.utils.Conexion;
 import java.sql.*;
 
 public class EnvioDAOImpl implements EnvioDAO {
-    private Conexion conexion = new Conexion();
+    private Conexion conexion = Conexion.getInstancia();
     public EnvioDAOImpl() {
         try (Connection con = conexion.conectar(); Statement st = con.createStatement()) {
             st.execute("CREATE TABLE IF NOT EXISTS envios (id INT AUTO_INCREMENT PRIMARY KEY, id_orden INT, direccion VARCHAR(150), estado VARCHAR(30))");

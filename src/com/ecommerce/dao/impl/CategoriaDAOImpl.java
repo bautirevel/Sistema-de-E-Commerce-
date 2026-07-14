@@ -4,7 +4,7 @@ import com.ecommerce.utils.Conexion;
 import java.sql.*;
 
 public class CategoriaDAOImpl implements CategoriaDAO {
-    private Conexion conexion = new Conexion();
+    private Conexion conexion = Conexion.getInstancia();
     public CategoriaDAOImpl() {
         try (Connection con = conexion.conectar(); Statement st = con.createStatement()) {
             st.execute("CREATE TABLE IF NOT EXISTS categorias (id INT AUTO_INCREMENT PRIMARY KEY, nombre VARCHAR(50), descripcion VARCHAR(100))");

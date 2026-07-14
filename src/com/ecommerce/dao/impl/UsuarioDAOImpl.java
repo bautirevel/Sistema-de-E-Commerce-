@@ -8,7 +8,7 @@ import java.sql.*;
 import java.util.Date;
 
 public class UsuarioDAOImpl implements UsuarioDAO {
-    private Conexion conexion = new Conexion();
+    private Conexion conexion = Conexion.getInstancia();
 
     public UsuarioDAOImpl() {
         try (Connection con = conexion.conectar(); Statement st = con.createStatement()) {
@@ -26,7 +26,7 @@ public class UsuarioDAOImpl implements UsuarioDAO {
             ps.setString(4, usuario.getContrasena());
             ps.setString(5, usuario.getRol().name());
             ps.executeUpdate();
-            System.out.println("¡Usuario registrado en la base de datos correctamente!");
+            System.out.println("Â¡Usuario registrado en la base de datos correctamente!");
         } catch (SQLIntegrityConstraintViolationException e) {
             System.out.println("[ERROR]: El email ya se encuentra registrado.");
         } catch (SQLException e) { 

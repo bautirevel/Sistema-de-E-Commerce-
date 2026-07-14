@@ -1,0 +1,19 @@
+FUNDAMENTACION DE DISEÑO Y ARQUITECTURA
+Proyecto: Sistema de E-Commerce
+Carrera: Analista de Sistemas - Escuela Da Vinci
+
+Para el desarrollo del presente sistema se aplicaron los pilares de la Programación Orientada a Objetos (Herencia, Polimorfismo, Abstracción y Encapsulamiento), apoyados sobre una arquitectura escalable. Se seleccionaron estratégicamente los siguientes Patrones de Diseño para resolver problemáticas específicas del negocio:
+
+1. PATRON DAO (Data Access Object) y ABSTRACT FACTORY:
+Se implementó el patrón DAO para separar completamente la lógica de negocio del acceso a la base de datos MySQL. Para garantizar la escalabilidad y cumplir con la consigna, se utilizó un DAOFactory (Abstract Factory) que permite instanciar las implementaciones específicas de SQL (MySQLDAOFactory) sin acoplar el código cliente a una tecnología de persistencia particular.
+
+2. PATRON STRATEGY (Polimorfismo en Pagos):
+Para el módulo de procesamiento de pagos, se diseñó la interfaz ProcesadorPago. Las clases PagoTarjetaCredito, PagoBilleteraVirtual, entre otras, implementan esta interfaz aplicando el patrón Strategy. Esto permite cambiar el algoritmo de cobro en tiempo de ejecución de manera dinámica, respetando el principio Open/Closed de SOLID.
+
+3. PATRON SINGLETON:
+Se aplicó este patrón creacional en la clase Conexion. Esto garantiza que exista una única instancia del pool de conexión a la base de datos durante toda la vida útil de la aplicación, optimizando los recursos de memoria y evitando cuellos de botella o conexiones huérfanas en el motor MySQL.
+
+4. PATRON BUILDER:
+Se introdujo en la clase Orden para facilitar la construcción de objetos complejos que requieren múltiples parámetros (fecha, cliente, total, estado, etc.). Esto proporciona un código mucho más legible y seguro al momento del checkout del cliente.
+
+Además, el sistema hace uso intensivo de Colecciones Genéricas (List, ArrayList) para el carrito temporal, y un robusto esquema de Excepciones Personalizadas (ej: StockInsuficienteException, PermisoDenegadoException) para blindar el flujo de ejecución frente a errores humanos.

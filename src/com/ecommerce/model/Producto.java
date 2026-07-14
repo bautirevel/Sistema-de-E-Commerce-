@@ -1,6 +1,7 @@
 package com.ecommerce.model;
+import com.ecommerce.interfaces.*;
 
-public abstract class Producto {
+public abstract class Producto implements Calculable, Mostrable {
     protected String codigo; protected String nombre; protected String descripcion;
     protected double precio; protected String categoria; protected int stock;
     protected double peso; protected EstadoProducto estado;
@@ -11,16 +12,13 @@ public abstract class Producto {
         this.peso = peso; this.estado = estado;
     }
 
-    public abstract double calcularPrecioFinal();
-    public abstract String mostrarInformacion();
     public abstract boolean validarDisponibilidad();
-    public abstract void aplicarDescuento(double porcentaje);
 
     public String getNombre() { return nombre; }
     public double getPrecio() { return precio; }
     public double getPrecioBase() { return precio; }
     public String getCodigo() { return codigo; }
-    public String getCodigoUnico() { return codigo; } // Alias para el DAO de Theo
+    public String getCodigoUnico() { return codigo; } 
     public String getDescripcion() { return descripcion; }
     public String getCategoria() { return categoria; }
     public int getStock() { return stock; }
