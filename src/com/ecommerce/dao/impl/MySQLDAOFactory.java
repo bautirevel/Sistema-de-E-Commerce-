@@ -9,4 +9,5 @@ public class MySQLDAOFactory extends DAOFactory {
     @Override public OrdenDAO crearOrdenDAO() { return new OrdenDAOImpl(); }
     @Override public EnvioDAO crearEnvioDAO() { return new EnvioDAOImpl(); }
     @Override public ReclamoDAO crearReclamoDAO() { return new ReclamoDAOImpl(); }
+    @Override public PagoDAO crearPagoDAO() { return new PagoDAOImpl(); }
 }

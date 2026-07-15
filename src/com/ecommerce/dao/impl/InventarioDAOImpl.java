@@ -33,7 +33,10 @@ public class InventarioDAOImpl implements InventarioDAO {
         return -1; // -1 indica que el producto no existe
     }
 
-    public void ajustarStock(String codigo, int nuevaCantidad) {
+    public void ajustarStock(String codigo, int nuevaCantidad) throws com.ecommerce.exceptions.DatosInvalidosException {
+        if (nuevaCantidad < 0) {
+            throw new com.ecommerce.exceptions.DatosInvalidosException("El stock no puede quedar en un valor negativo.");
+        }
         try (Connection con = Conexion.getInstancia().conectar();
              PreparedStatement ps = con.prepareStatement("UPDATE productos SET stock = ? WHERE codigo = ?")) {
             ps.setInt(1, nuevaCantidad);

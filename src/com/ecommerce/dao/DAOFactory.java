@@ -9,6 +9,7 @@ public abstract class DAOFactory {
     public abstract OrdenDAO crearOrdenDAO();
     public abstract EnvioDAO crearEnvioDAO();
     public abstract ReclamoDAO crearReclamoDAO();
+    public abstract PagoDAO crearPagoDAO();
 
     public static DAOFactory getDAOFactory() {
         return new com.ecommerce.dao.impl.MySQLDAOFactory();

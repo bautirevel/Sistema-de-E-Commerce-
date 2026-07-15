@@ -5,15 +5,17 @@ import com.ecommerce.model.Usuario;
 import com.ecommerce.model.Rol;
 import com.ecommerce.utils.Conexion;
 import java.sql.*;
-import java.util.Date;
 
 public class UsuarioDAOImpl implements UsuarioDAO {
     private Conexion conexion = Conexion.getInstancia();
 
     public UsuarioDAOImpl() {
         try (Connection con = conexion.conectar(); Statement st = con.createStatement()) {
-            st.execute("CREATE TABLE IF NOT EXISTS usuarios (id INT AUTO_INCREMENT PRIMARY KEY, nombre VARCHAR(50), apellido VARCHAR(50), email VARCHAR(100) UNIQUE, contrasena VARCHAR(50), rol VARCHAR(30), estado BOOLEAN DEFAULT TRUE)");
+            st.execute("CREATE TABLE IF NOT EXISTS usuarios (id INT AUTO_INCREMENT PRIMARY KEY, nombre VARCHAR(50), apellido VARCHAR(50), email VARCHAR(100) UNIQUE, contrasena VARCHAR(50), fecha_alta TIMESTAMP DEFAULT CURRENT_TIMESTAMP, rol VARCHAR(30), estado BOOLEAN DEFAULT TRUE)");
         } catch (SQLException e) { System.out.println("Error creando tabla: " + e.getMessage()); }
+        try (Connection con = conexion.conectar(); Statement st = con.createStatement()) {
+            st.execute("ALTER TABLE usuarios ADD COLUMN fecha_alta TIMESTAMP DEFAULT CURRENT_TIMESTAMP");
+        } catch (SQLException e) { /* la columna ya existe, se ignora */ }
     }
 
     @Override
@@ -42,7 +44,7 @@ public class UsuarioDAOImpl implements UsuarioDAO {
             ps.setString(2, pass);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                return new Usuario(rs.getInt("id"), rs.getString("nombre"), rs.getString("apellido"), rs.getString("email"), rs.getString("contrasena"), new Date(), rs.getBoolean("estado"), Rol.valueOf(rs.getString("rol")));
+                return new Usuario(rs.getInt("id"), rs.getString("nombre"), rs.getString("apellido"), rs.getString("email"), rs.getString("contrasena"), rs.getTimestamp("fecha_alta"), rs.getBoolean("estado"), Rol.valueOf(rs.getString("rol")));
             }
         } catch (SQLException e) { 
             System.out.println("Error de BD en el login: " + e.getMessage()); 
@@ -137,7 +139,7 @@ public class UsuarioDAOImpl implements UsuarioDAO {
 
     private Usuario mapearUsuario(ResultSet rs) throws SQLException {
         return new Usuario(rs.getInt("id"), rs.getString("nombre"), rs.getString("apellido"),
-                rs.getString("email"), rs.getString("contrasena"), new Date(),
+                rs.getString("email"), rs.getString("contrasena"), rs.getTimestamp("fecha_alta"),
                 rs.getBoolean("estado"), Rol.valueOf(rs.getString("rol")));
     }
 }
