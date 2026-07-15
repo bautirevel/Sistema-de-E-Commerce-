@@ -1,4 +1,5 @@
 package com.ecommerce.reportes;
+
 import com.ecommerce.utils.Conexion;
 import java.sql.*;
 
@@ -7,39 +8,68 @@ public class GeneradorReportes {
         System.out.println("\n==========================================");
         System.out.println("      REPORTES DE GESTION DA VINCI        ");
         System.out.println("==========================================");
-        try (Connection con = Conexion.getInstancia().conectar(); Statement st = con.createStatement()) {
-            
-            // Cantidad total de usuarios
-            ResultSet rs = st.executeQuery("SELECT COUNT(*) FROM usuarios");
-            if (rs.next()) System.out.println("-> Cantidad total de usuarios: " + rs.getInt(1));
-            
-            // Cantidad de clientes
-            rs = st.executeQuery("SELECT COUNT(*) FROM usuarios WHERE rol = 'CLIENTE'");
-            if (rs.next()) System.out.println("-> Cantidad de clientes: " + rs.getInt(1));
-            
-            // Cantidad de productos
-            rs = st.executeQuery("SELECT COUNT(*) FROM productos");
-            if (rs.next()) System.out.println("-> Cantidad de productos en catalogo: " + rs.getInt(1));
-            
-            // Productos sin stock
-            rs = st.executeQuery("SELECT COUNT(*) FROM productos WHERE stock = 0");
-            if (rs.next()) System.out.println("-> Productos sin stock: " + rs.getInt(1));
-            
-            // Ordenes generadas
-            rs = st.executeQuery("SELECT COUNT(*) FROM ordenes");
-            if (rs.next()) System.out.println("-> Ordenes generadas: " + rs.getInt(1));
-            
-            // Recaudacion total
-            rs = st.executeQuery("SELECT SUM(total) FROM ordenes");
-            if (rs.next()) System.out.println("-> Recaudacion total historica: $" + rs.getDouble(1));
+        try (Connection con = Conexion.getInstancia().conectar()) {
 
-            // Reclamos abiertos
-            rs = st.executeQuery("SELECT COUNT(*) FROM reclamos WHERE estado = 'ABIERTO'");
-            if (rs.next()) System.out.println("-> Reclamos en estado ABIERTO: " + rs.getInt(1));
-            
+            contarSimple(con, "-> Cantidad total de usuarios: ", "SELECT COUNT(*) FROM usuarios");
+            contarSimple(con, "-> Cantidad de clientes: ", "SELECT COUNT(*) FROM usuarios WHERE rol = 'CLIENTE'");
+            contarSimple(con, "-> Cantidad de productos en catalogo: ", "SELECT COUNT(*) FROM productos");
+
+            System.out.println("-> Productos por categoria:");
+            try (Statement st = con.createStatement();
+                 ResultSet rs = st.executeQuery("SELECT categoria, COUNT(*) AS cantidad FROM productos GROUP BY categoria")) {
+                while (rs.next()) System.out.println("     " + rs.getString("categoria") + ": " + rs.getInt("cantidad"));
+            } catch (SQLException e) { System.out.println("     (sin datos)"); }
+
+            contarSimple(con, "-> Productos sin stock: ", "SELECT COUNT(*) FROM productos WHERE stock = 0");
+
+            System.out.println("-> Productos mas vendidos:");
+            try (Statement st = con.createStatement();
+                 ResultSet rs = st.executeQuery(
+                         "SELECT producto_codigo, SUM(cantidad) AS total_vendido FROM orden_items GROUP BY producto_codigo ORDER BY total_vendido DESC LIMIT 5")) {
+                while (rs.next()) System.out.println("     " + rs.getString("producto_codigo") + ": " + rs.getInt("total_vendido") + " unidades");
+            } catch (SQLException e) { System.out.println("     (sin datos)"); }
+
+            contarSimple(con, "-> Ordenes generadas: ", "SELECT COUNT(*) FROM ordenes");
+
+            System.out.println("-> Ordenes por estado:");
+            try (Statement st = con.createStatement();
+                 ResultSet rs = st.executeQuery("SELECT estado, COUNT(*) AS cantidad FROM ordenes GROUP BY estado")) {
+                while (rs.next()) System.out.println("     " + rs.getString("estado") + ": " + rs.getInt("cantidad"));
+            } catch (SQLException e) { System.out.println("     (sin datos)"); }
+
+            try (Statement st = con.createStatement();
+                 ResultSet rs = st.executeQuery("SELECT SUM(monto) AS total FROM pagos WHERE estado = 'APROBADO'")) {
+                if (rs.next()) System.out.println("-> Recaudacion total: $" + rs.getDouble("total"));
+            } catch (SQLException e) { System.out.println("-> Recaudacion total: $0"); }
+
+            System.out.println("-> Recaudacion por metodo de pago:");
+            try (Statement st = con.createStatement();
+                 ResultSet rs = st.executeQuery("SELECT metodo, SUM(monto) AS total FROM pagos WHERE estado = 'APROBADO' GROUP BY metodo")) {
+                while (rs.next()) System.out.println("     " + rs.getString("metodo") + ": $" + rs.getDouble("total"));
+            } catch (SQLException e) { System.out.println("     (sin datos)"); }
+
+            System.out.println("-> Clientes con mas compras:");
+            try (Statement st = con.createStatement();
+                 ResultSet rs = st.executeQuery("SELECT cliente_email, COUNT(*) AS cantidad FROM ordenes GROUP BY cliente_email ORDER BY cantidad DESC LIMIT 5")) {
+                while (rs.next()) System.out.println("     " + rs.getString("cliente_email") + ": " + rs.getInt("cantidad") + " compras");
+            } catch (SQLException e) { System.out.println("     (sin datos)"); }
+
+            contarSimple(con, "-> Reclamos abiertos: ", "SELECT COUNT(*) FROM reclamos WHERE estado = 'ABIERTO'");
+            contarSimple(con, "-> Reclamos resueltos: ", "SELECT COUNT(*) FROM reclamos WHERE estado = 'RESUELTO'");
+            contarSimple(con, "-> Envios pendientes: ", "SELECT COUNT(*) FROM envios WHERE estado = 'PENDIENTE'");
+            contarSimple(con, "-> Envios entregados: ", "SELECT COUNT(*) FROM envios WHERE estado = 'ENTREGADO'");
+
         } catch (SQLException e) {
             System.out.println("Error ejecutando reportes: " + e.getMessage());
         }
         System.out.println("==========================================\n");
+    }
+
+    private void contarSimple(Connection con, String etiqueta, String sql) {
+        try (Statement st = con.createStatement(); ResultSet rs = st.executeQuery(sql)) {
+            if (rs.next()) System.out.println(etiqueta + rs.getInt(1));
+        } catch (SQLException e) {
+            System.out.println(etiqueta + "0");
+        }
     }
 }
