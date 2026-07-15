@@ -30,7 +30,7 @@ public class InventarioDAOImpl implements InventarioDAO {
         } catch (SQLException e) {
             System.out.println("Error consultando stock: " + e.getMessage());
         }
-        return -1; // -1 indica que el producto no existe
+        return -1;
     }
 
     public void ajustarStock(String codigo, int nuevaCantidad) throws com.ecommerce.exceptions.DatosInvalidosException {

@@ -79,7 +79,6 @@ public class CategoriaDAOImpl implements CategoriaDAO {
 
     @Override
     public void eliminar(int id) throws CategoriaNoEncontradaException {
-        // Baja logica: no se borra el registro (podria tener productos asociados), se marca como INACTIVO.
         try (Connection con = conexion.conectar(); PreparedStatement ps = con.prepareStatement("UPDATE categorias SET estado='INACTIVO' WHERE id=?")) {
             ps.setInt(1, id);
             int filas = ps.executeUpdate();

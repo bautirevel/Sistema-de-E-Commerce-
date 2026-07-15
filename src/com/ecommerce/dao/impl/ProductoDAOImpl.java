@@ -24,7 +24,6 @@ public class ProductoDAOImpl implements ProductoDAO {
                     "estado VARCHAR(20) DEFAULT 'ACTIVO', " +
                     "tipo VARCHAR(20) DEFAULT 'FISICO')");
         } catch (SQLException e) {}
-        // Migracion defensiva para bases creadas con el esquema viejo (solo codigo/nombre/precio/stock/categoria).
         agregarColumnaSiNoExiste("descripcion VARCHAR(255)");
         agregarColumnaSiNoExiste("peso DOUBLE DEFAULT 0");
         agregarColumnaSiNoExiste("estado VARCHAR(20) DEFAULT 'ACTIVO'");
@@ -106,7 +105,6 @@ public class ProductoDAOImpl implements ProductoDAO {
         return "FISICO";
     }
 
-    // Reconstruye la subclase correcta (Fisico/Digital/Importado) para no perder el polimorfismo al leer de la BD.
     private Producto mapear(ResultSet rs) throws SQLException {
         String codigo = rs.getString("codigo");
         String nombre = rs.getString("nombre");

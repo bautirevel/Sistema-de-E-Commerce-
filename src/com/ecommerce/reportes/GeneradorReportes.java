@@ -1,9 +1,19 @@
 package com.ecommerce.reportes;
 
+import com.ecommerce.dao.DAOFactory;
+import com.ecommerce.dao.EnvioDAO;
+import com.ecommerce.dao.OrdenDAO;
+import com.ecommerce.dao.PagoDAO;
+import com.ecommerce.model.EstadoEnvio;
 import com.ecommerce.utils.Conexion;
 import java.sql.*;
+import java.util.Map;
 
 public class GeneradorReportes {
+    private PagoDAO pagoDAO = DAOFactory.getDAOFactory().crearPagoDAO();
+    private EnvioDAO envioDAO = DAOFactory.getDAOFactory().crearEnvioDAO();
+    private OrdenDAO ordenDAO = DAOFactory.getDAOFactory().crearOrdenDAO();
+
     public void mostrarEstadisticas() {
         System.out.println("\n==========================================");
         System.out.println("      REPORTES DE GESTION DA VINCI        ");
@@ -32,32 +42,33 @@ public class GeneradorReportes {
             contarSimple(con, "-> Ordenes generadas: ", "SELECT COUNT(*) FROM ordenes");
 
             System.out.println("-> Ordenes por estado:");
-            try (Statement st = con.createStatement();
-                 ResultSet rs = st.executeQuery("SELECT estado, COUNT(*) AS cantidad FROM ordenes GROUP BY estado")) {
-                while (rs.next()) System.out.println("     " + rs.getString("estado") + ": " + rs.getInt("cantidad"));
-            } catch (SQLException e) { System.out.println("     (sin datos)"); }
+            Map<String, Integer> ordenesPorEstado = ordenDAO.contarPorEstado();
+            if (ordenesPorEstado.isEmpty()) System.out.println("     (sin datos)");
+            for (Map.Entry<String, Integer> entry : ordenesPorEstado.entrySet()) {
+                System.out.println("     " + entry.getKey() + ": " + entry.getValue());
+            }
 
-            try (Statement st = con.createStatement();
-                 ResultSet rs = st.executeQuery("SELECT SUM(monto) AS total FROM pagos WHERE estado = 'APROBADO'")) {
-                if (rs.next()) System.out.println("-> Recaudacion total: $" + rs.getDouble("total"));
-            } catch (SQLException e) { System.out.println("-> Recaudacion total: $0"); }
+            System.out.println("-> Recaudacion total: $" + pagoDAO.recaudacionTotal());
 
             System.out.println("-> Recaudacion por metodo de pago:");
-            try (Statement st = con.createStatement();
-                 ResultSet rs = st.executeQuery("SELECT metodo, SUM(monto) AS total FROM pagos WHERE estado = 'APROBADO' GROUP BY metodo")) {
-                while (rs.next()) System.out.println("     " + rs.getString("metodo") + ": $" + rs.getDouble("total"));
-            } catch (SQLException e) { System.out.println("     (sin datos)"); }
+            Map<String, Double> recaudacionPorMetodo = pagoDAO.recaudacionPorMetodo();
+            if (recaudacionPorMetodo.isEmpty()) System.out.println("     (sin datos)");
+            for (Map.Entry<String, Double> entry : recaudacionPorMetodo.entrySet()) {
+                System.out.println("     " + entry.getKey() + ": $" + entry.getValue());
+            }
 
             System.out.println("-> Clientes con mas compras:");
-            try (Statement st = con.createStatement();
-                 ResultSet rs = st.executeQuery("SELECT cliente_email, COUNT(*) AS cantidad FROM ordenes GROUP BY cliente_email ORDER BY cantidad DESC LIMIT 5")) {
-                while (rs.next()) System.out.println("     " + rs.getString("cliente_email") + ": " + rs.getInt("cantidad") + " compras");
-            } catch (SQLException e) { System.out.println("     (sin datos)"); }
+            Map<String, Integer> clientesTop = ordenDAO.clientesConMasCompras(5);
+            if (clientesTop.isEmpty()) System.out.println("     (sin datos)");
+            for (Map.Entry<String, Integer> entry : clientesTop.entrySet()) {
+                System.out.println("     " + entry.getKey() + ": " + entry.getValue() + " compras");
+            }
 
             contarSimple(con, "-> Reclamos abiertos: ", "SELECT COUNT(*) FROM reclamos WHERE estado = 'ABIERTO'");
             contarSimple(con, "-> Reclamos resueltos: ", "SELECT COUNT(*) FROM reclamos WHERE estado = 'RESUELTO'");
-            contarSimple(con, "-> Envios pendientes: ", "SELECT COUNT(*) FROM envios WHERE estado = 'PENDIENTE'");
-            contarSimple(con, "-> Envios entregados: ", "SELECT COUNT(*) FROM envios WHERE estado = 'ENTREGADO'");
+
+            System.out.println("-> Envios pendientes: " + envioDAO.contarPorEstado(EstadoEnvio.PENDIENTE));
+            System.out.println("-> Envios entregados: " + envioDAO.contarPorEstado(EstadoEnvio.ENTREGADO));
 
         } catch (SQLException e) {
             System.out.println("Error ejecutando reportes: " + e.getMessage());

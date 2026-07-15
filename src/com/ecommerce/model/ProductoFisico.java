@@ -4,8 +4,6 @@ public class ProductoFisico extends Producto {
         super(codigo, nombre, "Fisico", precio, "General", stock, 1.0, EstadoProducto.ACTIVO);
     }
 
-    // Constructor completo: se usa al reconstruir el producto desde la base de datos
-    // o cuando el usuario carga todos los campos desde el menu.
     public ProductoFisico(String codigo, String nombre, String descripcion, double precio, String categoria, int stock, double peso, EstadoProducto estado) {
         super(codigo, nombre, descripcion, precio, categoria, stock, peso, estado);
     }

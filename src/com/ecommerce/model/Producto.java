@@ -16,9 +16,7 @@ public abstract class Producto implements Calculable, Mostrable {
 
     public String getNombre() { return nombre; }
     public double getPrecio() { return precio; }
-    public double getPrecioBase() { return precio; }
     public String getCodigo() { return codigo; }
-    public String getCodigoUnico() { return codigo; } 
     public String getDescripcion() { return descripcion; }
     public String getCategoria() { return categoria; }
     public int getStock() { return stock; }

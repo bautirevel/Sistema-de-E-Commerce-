@@ -3,7 +3,6 @@ package com.ecommerce.main;
 import java.util.Scanner;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Date;
 import java.sql.*;
 
@@ -102,7 +101,6 @@ public class Menu {
         usuarioLogueado = null;
     }
 
-    // ==================== ADMINISTRADOR ====================
     private boolean menuAdministrador(int opcion) throws Exception {
         Validador.validarPermiso(usuarioLogueado.getRol() == Rol.ADMINISTRADOR);
         switch (opcion) {
@@ -255,7 +253,6 @@ public class Menu {
         }
     }
 
-    // ==================== CLIENTE ====================
     private boolean menuCliente(int opcion) throws Exception {
         Validador.validarPermiso(usuarioLogueado.getRol() == Rol.CLIENTE);
         switch (opcion) {
@@ -392,7 +389,6 @@ public class Menu {
         }
     }
 
-    // ==================== OPERADOR DE VENTAS ====================
     private boolean menuOperadorVentas(int opcion) throws Exception {
         Validador.validarPermiso(usuarioLogueado.getRol() == Rol.OPERADOR_VENTAS);
         switch (opcion) {
@@ -403,7 +399,7 @@ public class Menu {
                     for (Orden o : ordenDAO.obtenerTodas()) System.out.println(o);
                 } else {
                     System.out.print("Numero de orden: "); int idOrd = Integer.parseInt(scanner.nextLine());
-                    ordenDAO.buscarPorId(idOrd); // valida que exista, lanza OrdenNoEncontradaException si no
+                    ordenDAO.buscarPorId(idOrd);
                     System.out.println("Nuevo estado: 1. PREPARACION | 2. DESPACHADA | 3. EN_TRANSITO | 4. ENTREGADA | 5. CANCELADA | 6. DEVUELTA");
                     int opEstOrd = Integer.parseInt(scanner.nextLine());
                     EstadoOrden[] estados = { EstadoOrden.PREPARACION, EstadoOrden.DESPACHADA, EstadoOrden.EN_TRANSITO, EstadoOrden.ENTREGADA, EstadoOrden.CANCELADA, EstadoOrden.DEVUELTA };
@@ -439,7 +435,6 @@ public class Menu {
         }
     }
 
-    // ==================== RESPONSABLE DE LOGISTICA ====================
     private boolean menuLogistica(int opcion) throws Exception {
         Validador.validarPermiso(usuarioLogueado.getRol() == Rol.RESPONSABLE_LOGISTICA);
         switch (opcion) {
