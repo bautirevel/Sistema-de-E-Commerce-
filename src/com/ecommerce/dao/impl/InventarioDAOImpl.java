@@ -24,7 +24,6 @@ public class InventarioDAOImpl implements InventarioDAO {
         try {
             alterarStock(codigo, cantidad, "INGRESO");
         } catch (StockInsuficienteException e) {
-            // no puede ocurrir con una cantidad positiva de ingreso
         }
     }
 
