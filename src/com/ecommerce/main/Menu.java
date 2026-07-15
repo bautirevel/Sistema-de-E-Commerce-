@@ -7,7 +7,6 @@ import java.util.Date;
 import java.sql.*;
 
 import com.ecommerce.dao.*;
-import com.ecommerce.dao.impl.InventarioDAOImpl;
 import com.ecommerce.model.*;
 import com.ecommerce.pagos.*;
 import com.ecommerce.exceptions.*;
@@ -21,7 +20,7 @@ public class Menu {
     private UsuarioDAO usuarioDAO = factory.crearUsuarioDAO();
     private ProductoDAO productoDAO = factory.crearProductoDAO();
     private CategoriaDAO categoriaDAO = factory.crearCategoriaDAO();
-    private InventarioDAOImpl inventarioDAO = (InventarioDAOImpl) factory.crearInventarioDAO();
+    private InventarioDAO inventarioDAO = factory.crearInventarioDAO();
     private OrdenDAO ordenDAO = factory.crearOrdenDAO();
     private EnvioDAO envioDAO = factory.crearEnvioDAO();
     private ReclamoDAO reclamoDAO = factory.crearReclamoDAO();
